@@ -542,6 +542,10 @@ class qtype_gapfill_question extends question_graded_automatically_with_countbac
      * [0] => (int) 1
      * [1] => question_state_gradedright object etc etc etc
      *
+     * All-or-nothing scoring: 
+     * - 100% if all gaps are correct
+     * - 0% if any gap is incorrect
+     *
      * @param array $response
      * @return array
      */
@@ -549,7 +553,11 @@ class qtype_gapfill_question extends question_graded_automatically_with_countbac
         $response = $this->discard_duplicates($response);
         $right = $this->get_num_parts_right($response)[0];
         $this->fraction = $right / $this->gapcount;
-        $grade = [$this->fraction, question_state::graded_state_for_fraction($this->fraction)];
+        if($this->fraction == 1){
+            $grade = array($this->fraction, question_state::graded_state_for_fraction($this->fraction));
+        } else {
+            $grade = array(0, question_state::graded_state_for_fraction(0));
+        }
         return $grade;
     }
 
